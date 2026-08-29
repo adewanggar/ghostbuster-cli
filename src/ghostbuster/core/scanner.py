@@ -68,9 +68,7 @@ class ScanOrchestrator:
 
         scanners_to_run = self._scanners
         if categories:
-            scanners_to_run = [
-                s for s in self._scanners if s.name in categories
-            ]
+            scanners_to_run = [s for s in self._scanners if s.name in categories]
 
         for scanner in scanners_to_run:
             try:

@@ -48,6 +48,7 @@ class TestCLI:
         result = runner.invoke(app, ["scan", str(tmp_path), "--format", "json"])
         assert result.exit_code == 0
         import json
+
         data = json.loads(result.output)
         assert "ghosts" in data
         assert "ghost_count" in data

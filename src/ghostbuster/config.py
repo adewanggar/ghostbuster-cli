@@ -23,9 +23,17 @@ class GhostbusterConfig:
     # Directories to exclude from scanning
     exclude_dirs: list[str] = field(
         default_factory=lambda: [
-            "venv", ".venv", "node_modules", ".git",
-            "__pycache__", ".tox", ".nox", "build", "dist",
-            ".eggs", "migrations",
+            "venv",
+            ".venv",
+            "node_modules",
+            ".git",
+            "__pycache__",
+            ".tox",
+            ".nox",
+            "build",
+            "dist",
+            ".eggs",
+            "migrations",
         ]
     )
 

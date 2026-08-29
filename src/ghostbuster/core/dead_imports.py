@@ -103,9 +103,7 @@ class DeadImportScanner:
 
             # Check if any of the possible import names are actually used
             is_used = any(
-                self._import_matches(imp, name)
-                for imp in imported
-                for name in import_names
+                self._import_matches(imp, name) for imp in imported for name in import_names
             )
 
             if not is_used:
@@ -215,6 +213,26 @@ class DeadImportScanner:
                     if name:
                         deps.append((name, f"pyproject.toml [optional: {group_name}]"))
 
+            # Support Poetry: [tool.poetry.dependencies]
+            poetry_deps = data.get("tool", {}).get("poetry", {}).get("dependencies", {})
+            if isinstance(poetry_deps, dict):
+                for dep_name in poetry_deps:
+                    if dep_name.lower() != "python":
+                        deps.append((dep_name, "pyproject.toml [poetry.dependencies]"))
+
+            # Support Poetry groups: [tool.poetry.group.<group>.dependencies]
+            poetry_groups = data.get("tool", {}).get("poetry", {}).get("group", {})
+            if isinstance(poetry_groups, dict):
+                for group_name, group_data in poetry_groups.items():
+                    if isinstance(group_data, dict):
+                        g_deps = group_data.get("dependencies", {})
+                        if isinstance(g_deps, dict):
+                            for dep_name in g_deps:
+                                if dep_name.lower() != "python":
+                                    deps.append(
+                                        (dep_name, f"pyproject.toml [poetry.group.{group_name}]")
+                                    )
+
         except (OSError, Exception):
             pass
         return deps
@@ -226,7 +244,18 @@ class DeadImportScanner:
             # Skip common non-source directories
             parts = py_file.relative_to(path).parts
             if any(
-                p in {"venv", ".venv", "node_modules", ".git", "__pycache__", ".tox", ".nox", "build", "dist"}
+                p
+                in {
+                    "venv",
+                    ".venv",
+                    "node_modules",
+                    ".git",
+                    "__pycache__",
+                    ".tox",
+                    ".nox",
+                    "build",
+                    "dist",
+                }
                 for p in parts
             ):
                 continue

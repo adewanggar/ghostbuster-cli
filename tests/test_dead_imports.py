@@ -49,6 +49,22 @@ class TestDeadImportScanner:
         assert "requests" not in ghost_names
         assert "pyyaml" not in ghost_names
 
+    def test_finds_unused_dep_poetry(self, tmp_path: Path) -> None:
+        """Should detect unused deps defined in Poetry format."""
+        pyproject = tmp_path / "pyproject.toml"
+        pyproject.write_text(
+            '[tool.poetry.dependencies]\npython = "^3.10"\nrequests = "^2.28.0"\nredis = "^4.0.0"\n',
+            encoding="utf-8",
+        )
+        app = tmp_path / "app.py"
+        app.write_text("import requests\n", encoding="utf-8")
+
+        ghosts = self.scanner.scan(tmp_path)
+        ghost_names = {g.name for g in ghosts}
+        assert "redis" in ghost_names
+        assert "requests" not in ghost_names
+        assert "python" not in ghost_names
+
     def test_ghost_category(self, project_with_requirements: Path) -> None:
         """All ghosts should have the DEAD_IMPORT category."""
         ghosts = self.scanner.scan(project_with_requirements)

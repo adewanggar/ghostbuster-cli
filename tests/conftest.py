@@ -56,7 +56,7 @@ def project_with_pyproject(tmp_project: Path) -> Path:
     # Only import requests and yaml
     src = tmp_project / "src" / "app.py"
     src.write_text(
-        'import requests\nimport yaml\n\ndef run():\n    pass\n',
+        "import requests\nimport yaml\n\ndef run():\n    pass\n",
         encoding="utf-8",
     )
 
@@ -91,14 +91,14 @@ def project_with_zombies(tmp_project: Path) -> Path:
         'def used_function():\n    return "I am used"\n\n'
         'def unused_helper():\n    return "Nobody calls me"\n\n'
         'def another_unused():\n    return "Also dead"\n\n'
-        'class UnusedClass:\n    pass\n',
+        "class UnusedClass:\n    pass\n",
         encoding="utf-8",
     )
 
     # main.py calls used_function but not the others
     main = tmp_project / "src" / "main.py"
     main.write_text(
-        'from utils import used_function\n\ndef main():\n    result = used_function()\n    print(result)\n',
+        "from utils import used_function\n\ndef main():\n    result = used_function()\n    print(result)\n",
         encoding="utf-8",
     )
 
@@ -110,7 +110,7 @@ def project_with_phantom_envs(tmp_project: Path) -> Path:
     """Create a project referencing env vars that don't exist."""
     code = tmp_project / "src" / "config.py"
     code.write_text(
-        'import os\n\n'
+        "import os\n\n"
         'DATABASE_URL = os.environ["DATABASE_URL"]\n'
         'SECRET_KEY = os.environ.get("SECRET_KEY")\n'
         'API_KEY = os.getenv("API_KEY")\n'
@@ -121,8 +121,7 @@ def project_with_phantom_envs(tmp_project: Path) -> Path:
     # Create a .env file with only some of these
     env_file = tmp_project / ".env"
     env_file.write_text(
-        "DATABASE_URL=postgres://localhost/db\n"
-        "DEBUG=true\n",
+        "DATABASE_URL=postgres://localhost/db\nDEBUG=true\n",
         encoding="utf-8",
     )
 

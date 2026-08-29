@@ -58,8 +58,12 @@ class TestGhostScoring:
     def test_breakdown_by_category(self) -> None:
         """Score breakdown should count ghosts per category."""
         ghosts = [
-            Ghost(category=GhostCategory.DEAD_IMPORT, name="a", message="", severity=Severity.MEDIUM),
-            Ghost(category=GhostCategory.DEAD_IMPORT, name="b", message="", severity=Severity.MEDIUM),
+            Ghost(
+                category=GhostCategory.DEAD_IMPORT, name="a", message="", severity=Severity.MEDIUM
+            ),
+            Ghost(
+                category=GhostCategory.DEAD_IMPORT, name="b", message="", severity=Severity.MEDIUM
+            ),
             Ghost(category=GhostCategory.ORPHAN_FILE, name="c", message="", severity=Severity.HIGH),
         ]
         score = calculate_score(ghosts)
@@ -69,8 +73,12 @@ class TestGhostScoring:
 
     def test_severity_multiplier(self) -> None:
         """Higher severity should contribute more to the score."""
-        low = [Ghost(category=GhostCategory.ZOMBIE_CODE, name="a", message="", severity=Severity.LOW)]
-        high = [Ghost(category=GhostCategory.ZOMBIE_CODE, name="b", message="", severity=Severity.HIGH)]
+        low = [
+            Ghost(category=GhostCategory.ZOMBIE_CODE, name="a", message="", severity=Severity.LOW)
+        ]
+        high = [
+            Ghost(category=GhostCategory.ZOMBIE_CODE, name="b", message="", severity=Severity.HIGH)
+        ]
 
         score_low = calculate_score(low)
         score_high = calculate_score(high)
@@ -94,7 +102,12 @@ class TestGhostScoring:
     def test_score_serialization(self) -> None:
         """GhostScore.to_dict() should be JSON-serializable."""
         ghosts = [
-            Ghost(category=GhostCategory.DEAD_IMPORT, name="a", message="test", severity=Severity.MEDIUM),
+            Ghost(
+                category=GhostCategory.DEAD_IMPORT,
+                name="a",
+                message="test",
+                severity=Severity.MEDIUM,
+            ),
         ]
         score = calculate_score(ghosts)
         data = score.to_dict()

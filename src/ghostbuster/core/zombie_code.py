@@ -15,48 +15,145 @@ from ghostbuster.core.models import Ghost, GhostCategory, Severity
 # Decorators that indicate a function is used externally (not dead)
 FRAMEWORK_DECORATORS: set[str] = {
     # Web frameworks
-    "route", "get", "post", "put", "delete", "patch", "head", "options",
-    "api_view", "action", "app_route",
+    "route",
+    "get",
+    "post",
+    "put",
+    "delete",
+    "patch",
+    "head",
+    "options",
+    "api_view",
+    "action",
+    "app_route",
     # Testing
-    "fixture", "pytest_fixture", "parametrize",
-    "override_settings", "mock_patch",
+    "fixture",
+    "pytest_fixture",
+    "parametrize",
+    "override_settings",
+    "mock_patch",
     # General
-    "property", "staticmethod", "classmethod", "abstractmethod",
-    "cached_property", "lru_cache", "cache",
-    "register", "receiver", "hook", "hookimpl",
-    "validator", "field_validator", "model_validator",
-    "event", "listener", "subscriber", "handler",
-    "task", "shared_task", "periodic_task",
-    "command", "group", "callback",
-    "click_command", "click_group",
-    "app_command", "app_group",
+    "property",
+    "staticmethod",
+    "classmethod",
+    "abstractmethod",
+    "cached_property",
+    "lru_cache",
+    "cache",
+    "register",
+    "receiver",
+    "hook",
+    "hookimpl",
+    "validator",
+    "field_validator",
+    "model_validator",
+    "event",
+    "listener",
+    "subscriber",
+    "handler",
+    "task",
+    "shared_task",
+    "periodic_task",
+    "command",
+    "group",
+    "callback",
+    "click_command",
+    "click_group",
+    "app_command",
+    "app_group",
     "overload",
 }
 
 # Method names that are expected to exist by convention (dunder, lifecycle, etc.)
 CONVENTIONAL_NAMES: set[str] = {
     # Dunder methods
-    "__init__", "__new__", "__del__", "__repr__", "__str__", "__bytes__",
-    "__format__", "__hash__", "__bool__", "__len__", "__length_hint__",
-    "__getitem__", "__setitem__", "__delitem__", "__iter__", "__next__",
-    "__reversed__", "__contains__", "__add__", "__radd__", "__iadd__",
-    "__sub__", "__mul__", "__truediv__", "__floordiv__", "__mod__",
-    "__pow__", "__lshift__", "__rshift__", "__and__", "__xor__", "__or__",
-    "__neg__", "__pos__", "__abs__", "__invert__",
-    "__complex__", "__int__", "__float__", "__index__",
-    "__enter__", "__exit__", "__await__", "__aiter__", "__anext__",
-    "__aenter__", "__aexit__", "__call__", "__get__", "__set__",
-    "__delete__", "__set_name__", "__init_subclass__", "__class_getitem__",
-    "__eq__", "__ne__", "__lt__", "__le__", "__gt__", "__ge__",
-    "__getattr__", "__getattribute__", "__setattr__", "__delattr__",
-    "__dir__", "__slots__", "__dict__", "__weakref__",
-    "__reduce__", "__reduce_ex__", "__getstate__", "__setstate__",
-    "__copy__", "__deepcopy__", "__sizeof__", "__fspath__",
-    "__missing__", "__post_init__",
+    "__init__",
+    "__new__",
+    "__del__",
+    "__repr__",
+    "__str__",
+    "__bytes__",
+    "__format__",
+    "__hash__",
+    "__bool__",
+    "__len__",
+    "__length_hint__",
+    "__getitem__",
+    "__setitem__",
+    "__delitem__",
+    "__iter__",
+    "__next__",
+    "__reversed__",
+    "__contains__",
+    "__add__",
+    "__radd__",
+    "__iadd__",
+    "__sub__",
+    "__mul__",
+    "__truediv__",
+    "__floordiv__",
+    "__mod__",
+    "__pow__",
+    "__lshift__",
+    "__rshift__",
+    "__and__",
+    "__xor__",
+    "__or__",
+    "__neg__",
+    "__pos__",
+    "__abs__",
+    "__invert__",
+    "__complex__",
+    "__int__",
+    "__float__",
+    "__index__",
+    "__enter__",
+    "__exit__",
+    "__await__",
+    "__aiter__",
+    "__anext__",
+    "__aenter__",
+    "__aexit__",
+    "__call__",
+    "__get__",
+    "__set__",
+    "__delete__",
+    "__set_name__",
+    "__init_subclass__",
+    "__class_getitem__",
+    "__eq__",
+    "__ne__",
+    "__lt__",
+    "__le__",
+    "__gt__",
+    "__ge__",
+    "__getattr__",
+    "__getattribute__",
+    "__setattr__",
+    "__delattr__",
+    "__dir__",
+    "__slots__",
+    "__dict__",
+    "__weakref__",
+    "__reduce__",
+    "__reduce_ex__",
+    "__getstate__",
+    "__setstate__",
+    "__copy__",
+    "__deepcopy__",
+    "__sizeof__",
+    "__fspath__",
+    "__missing__",
+    "__post_init__",
     # Lifecycle / Framework hooks
-    "setUp", "tearDown", "setUpClass", "tearDownClass",
-    "setUpModule", "tearDownModule",
-    "setup_method", "teardown_method",
+    "setUp",
+    "tearDown",
+    "setUpClass",
+    "tearDownClass",
+    "setUpModule",
+    "tearDownModule",
+    "setup_method",
+    "teardown_method",
     "main",
 }
 
@@ -69,6 +166,7 @@ class _Definition:
     file_path: Path
     line_number: int
     is_method: bool = False
+    is_class: bool = False
     has_framework_decorator: bool = False
 
 
@@ -86,10 +184,19 @@ class ZombieCodeScanner:
             # Skip non-source directories
             parts = py_file.relative_to(path).parts
             if any(
-                p in {
-                    "venv", ".venv", "node_modules", ".git",
-                    "__pycache__", ".tox", ".nox", "build", "dist",
-                    "migrations", ".eggs",
+                p
+                in {
+                    "venv",
+                    ".venv",
+                    "node_modules",
+                    ".git",
+                    "__pycache__",
+                    ".tox",
+                    ".nox",
+                    "build",
+                    "dist",
+                    "migrations",
+                    ".eggs",
                 }
                 for p in parts
             ):
@@ -110,12 +217,18 @@ class ZombieCodeScanner:
         ghosts: list[Ghost] = []
         for defn in definitions:
             if self._is_zombie(defn, references):
-                rel_path = defn.file_path.relative_to(path) if path in defn.file_path.parents or path == defn.file_path.parent else defn.file_path
+                rel_path = (
+                    defn.file_path.relative_to(path)
+                    if path in defn.file_path.parents or path == defn.file_path.parent
+                    else defn.file_path
+                )
+                kind = "Class" if defn.is_class else "Function"
+                action = "referenced" if defn.is_class else "called"
                 ghosts.append(
                     Ghost(
                         category=GhostCategory.ZOMBIE_CODE,
                         name=defn.name,
-                        message=f"Function '{defn.name}' is defined at {rel_path}:{defn.line_number} but never called",
+                        message=f"{kind} '{defn.name}' is defined at {rel_path}:{defn.line_number} but never {action}",
                         file_path=defn.file_path,
                         line_number=defn.line_number,
                         severity=Severity.LOW,
@@ -165,6 +278,7 @@ class ZombieCodeScanner:
                             name=node.name,
                             file_path=file_path,
                             line_number=node.lineno,
+                            is_class=True,
                         )
                     )
 

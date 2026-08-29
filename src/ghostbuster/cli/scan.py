@@ -100,7 +100,11 @@ def scan(
     try:
         orchestrator = create_default_orchestrator()
 
-        with console.status("[cyan]Hunting for ghosts...[/cyan]", spinner="dots") if format == OutputFormat.rich else _nullcontext():
+        with (
+            console.status("[cyan]Hunting for ghosts...[/cyan]", spinner="dots")
+            if format == OutputFormat.rich
+            else _nullcontext()
+        ):
             result = orchestrator.run(path, categories=category)
 
     except Exception as exc:

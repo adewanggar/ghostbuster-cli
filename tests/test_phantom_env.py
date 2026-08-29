@@ -89,6 +89,7 @@ class TestPhantomEnvScanner:
         )
         ghosts = self.scanner.scan(tmp_path)
         from ghostbuster.core.models import Severity
+
         assert all(g.severity == Severity.HIGH for g in ghosts)
 
     def test_parses_export_syntax(self, tmp_path: Path) -> None:

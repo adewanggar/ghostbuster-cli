@@ -10,10 +10,10 @@ from ghostbuster.core.models import Ghost, GhostCategory, GhostScore, Severity
 
 # Weight multipliers per category (reflects real-world severity impact)
 CATEGORY_WEIGHTS: dict[GhostCategory, int] = {
-    GhostCategory.DEAD_IMPORT: 5,    # Common, moderate waste
-    GhostCategory.ORPHAN_FILE: 8,    # Disk space, clone time
-    GhostCategory.ZOMBIE_CODE: 3,    # Confusing but usually harmless
-    GhostCategory.PHANTOM_ENV: 10,   # Can cause runtime crashes
+    GhostCategory.DEAD_IMPORT: 5,  # Common, moderate waste
+    GhostCategory.ORPHAN_FILE: 8,  # Disk space, clone time
+    GhostCategory.ZOMBIE_CODE: 3,  # Confusing but usually harmless
+    GhostCategory.PHANTOM_ENV: 10,  # Can cause runtime crashes
 }
 
 # Bonus weight for high-severity ghosts

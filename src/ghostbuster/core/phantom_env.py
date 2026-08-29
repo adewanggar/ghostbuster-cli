@@ -36,9 +36,7 @@ class PhantomEnvScanner:
                 # Use the first location for the ghost
                 first_file, first_line = locations[0]
 
-                locations_str = ", ".join(
-                    f"{f.name}:{l}" for f, l in locations[:3]
-                )
+                locations_str = ", ".join(f"{f.name}:{l}" for f, l in locations[:3])
                 if len(locations) > 3:
                     locations_str += f" (+{len(locations) - 3} more)"
 
@@ -60,9 +58,7 @@ class PhantomEnvScanner:
 
         return ghosts
 
-    def _find_referenced_env_vars(
-        self, path: Path
-    ) -> dict[str, list[tuple[Path, int]]]:
+    def _find_referenced_env_vars(self, path: Path) -> dict[str, list[tuple[Path, int]]]:
         """Find all env var references in Python files via AST + regex.
 
         Returns mapping of env_var_name -> list of (file_path, line_number).
@@ -72,9 +68,17 @@ class PhantomEnvScanner:
         for py_file in path.rglob("*.py"):
             parts = py_file.relative_to(path).parts
             if any(
-                p in {
-                    "venv", ".venv", "node_modules", ".git",
-                    "__pycache__", ".tox", ".nox", "build", "dist",
+                p
+                in {
+                    "venv",
+                    ".venv",
+                    "node_modules",
+                    ".git",
+                    "__pycache__",
+                    ".tox",
+                    ".nox",
+                    "build",
+                    "dist",
                 }
                 for p in parts
             ):
@@ -90,9 +94,7 @@ class PhantomEnvScanner:
             for node in ast.walk(tree):
                 env_name = self._extract_env_var_from_node(node)
                 if env_name:
-                    env_vars.setdefault(env_name, []).append(
-                        (py_file, getattr(node, "lineno", 0))
-                    )
+                    env_vars.setdefault(env_name, []).append((py_file, getattr(node, "lineno", 0)))
 
         return env_vars
 

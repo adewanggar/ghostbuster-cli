@@ -29,10 +29,7 @@ class ImportFixer:
 
         for py_file in path.rglob("*.py"):
             parts = py_file.relative_to(path).parts
-            if any(
-                p in {"venv", ".venv", "node_modules", ".git", "__pycache__"}
-                for p in parts
-            ):
+            if any(p in {"venv", ".venv", "node_modules", ".git", "__pycache__"} for p in parts):
                 continue
 
             file_changes = self._find_removable_imports(py_file, dead_packages)
@@ -50,10 +47,7 @@ class ImportFixer:
 
         for py_file in path.rglob("*.py"):
             parts = py_file.relative_to(path).parts
-            if any(
-                p in {"venv", ".venv", "node_modules", ".git", "__pycache__"}
-                for p in parts
-            ):
+            if any(p in {"venv", ".venv", "node_modules", ".git", "__pycache__"} for p in parts):
                 continue
 
             result = self._remove_imports_from_file(py_file, dead_packages)
@@ -69,9 +63,7 @@ class ImportFixer:
             if g.category == GhostCategory.DEAD_IMPORT
         }
 
-    def _find_removable_imports(
-        self, filepath: Path, dead_packages: set[str]
-    ) -> list[str]:
+    def _find_removable_imports(self, filepath: Path, dead_packages: set[str]) -> list[str]:
         """Find import statements that can be removed from a file."""
         changes: list[str] = []
         try:
@@ -98,9 +90,7 @@ class ImportFixer:
 
         return changes
 
-    def _remove_imports_from_file(
-        self, filepath: Path, dead_packages: set[str]
-    ) -> list[str]:
+    def _remove_imports_from_file(self, filepath: Path, dead_packages: set[str]) -> list[str]:
         """Remove import statements for dead packages from a single file."""
         applied: list[str] = []
         try:
@@ -136,9 +126,7 @@ class ImportFixer:
         if lines_to_remove:
             source_lines = source.splitlines(keepends=True)
             new_lines = [
-                line
-                for i, line in enumerate(source_lines, start=1)
-                if i not in lines_to_remove
+                line for i, line in enumerate(source_lines, start=1) if i not in lines_to_remove
             ]
             filepath.write_text("".join(new_lines), encoding="utf-8")
 

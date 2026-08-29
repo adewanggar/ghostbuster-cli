@@ -54,21 +54,31 @@ LARGE_FILE_THRESHOLD = 10 * 1024 * 1024
 
 # File extensions that are commonly large and shouldn't be in repos
 LARGE_FILE_EXTENSIONS: set[str] = {
-    ".h5", ".hdf5",        # ML model files
-    ".pkl", ".pickle",     # Pickled data
-    ".pt", ".pth",         # PyTorch models
-    ".onnx",               # ONNX models
-    ".bin",                # Generic binary
-    ".db", ".sqlite",      # Databases
+    ".h5",
+    ".hdf5",  # ML model files
+    ".pkl",
+    ".pickle",  # Pickled data
+    ".pt",
+    ".pth",  # PyTorch models
+    ".onnx",  # ONNX models
+    ".bin",  # Generic binary
+    ".db",
+    ".sqlite",  # Databases
     ".sqlite3",
-    ".csv",                # Data files (when large)
+    ".csv",  # Data files (when large)
     ".parquet",
-    ".zip", ".tar", ".gz", # Archives
-    ".tar.gz", ".tgz",
-    ".rar", ".7z",
-    ".mp4", ".avi",        # Video files
-    ".mov", ".mkv",
-    ".iso",                # Disk images
+    ".zip",
+    ".tar",
+    ".gz",  # Archives
+    ".tar.gz",
+    ".tgz",
+    ".rar",
+    ".7z",
+    ".mp4",
+    ".avi",  # Video files
+    ".mov",
+    ".mkv",
+    ".iso",  # Disk images
 }
 
 
@@ -129,9 +139,7 @@ class OrphanFileScanner:
                 return True
         return False
 
-    def _check_ignorable_dirs(
-        self, path: Path, gitignore_patterns: set[str]
-    ) -> list[Ghost]:
+    def _check_ignorable_dirs(self, path: Path, gitignore_patterns: set[str]) -> list[Ghost]:
         """Check for directories that should be in .gitignore."""
         ghosts: list[Ghost] = []
 
@@ -142,7 +150,9 @@ class OrphanFileScanner:
             dir_name = item.name
 
             # Check known ignorable directories
-            if dir_name in IGNORABLE_DIRS and not self._is_in_gitignore(dir_name, gitignore_patterns):
+            if dir_name in IGNORABLE_DIRS and not self._is_in_gitignore(
+                dir_name, gitignore_patterns
+            ):
                 # Calculate directory size for impact assessment
                 size = self._get_dir_size(item)
                 size_str = self._format_size(size)
@@ -162,7 +172,9 @@ class OrphanFileScanner:
                 )
 
             # Check for egg-info directories
-            if dir_name.endswith(".egg-info") and not self._is_in_gitignore("*.egg-info", gitignore_patterns):
+            if dir_name.endswith(".egg-info") and not self._is_in_gitignore(
+                "*.egg-info", gitignore_patterns
+            ):
                 ghosts.append(
                     Ghost(
                         category=GhostCategory.ORPHAN_FILE,
@@ -192,10 +204,7 @@ class OrphanFileScanner:
                 continue
 
             parts = rel.parts
-            if any(
-                p in {".git", "node_modules", "venv", ".venv", "__pycache__"}
-                for p in parts
-            ):
+            if any(p in {".git", "node_modules", "venv", ".venv", "__pycache__"} for p in parts):
                 continue
 
             try:
@@ -234,9 +243,7 @@ class OrphanFileScanner:
 
         return ghosts
 
-    def _check_forgotten_files(
-        self, path: Path, gitignore_patterns: set[str]
-    ) -> list[Ghost]:
+    def _check_forgotten_files(self, path: Path, gitignore_patterns: set[str]) -> list[Ghost]:
         """Check for common files that should be gitignored."""
         ghosts: list[Ghost] = []
 
@@ -247,16 +254,16 @@ class OrphanFileScanner:
             name = item.name
 
             # Check specific filenames
-            if name in IGNORABLE_PATTERNS and not self._is_in_gitignore(
-                name, gitignore_patterns
-            ):
+            if name in IGNORABLE_PATTERNS and not self._is_in_gitignore(name, gitignore_patterns):
                 ghosts.append(
                     Ghost(
                         category=GhostCategory.ORPHAN_FILE,
                         name=name,
                         message=f"File '{name}' ({IGNORABLE_PATTERNS[name]}) should be in .gitignore",
                         file_path=item,
-                        severity=Severity.LOW if name in {".DS_Store", "Thumbs.db"} else Severity.MEDIUM,
+                        severity=Severity.LOW
+                        if name in {".DS_Store", "Thumbs.db"}
+                        else Severity.MEDIUM,
                         fixable=True,
                         suggestion=f"Add '{name}' to .gitignore",
                     )
