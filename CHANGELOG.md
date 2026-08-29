@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-29
+
+### Added
+
+- **Node.js, JavaScript, and TypeScript Support**:
+  - **Dead Imports**: Scans `package.json` (`dependencies`, `devDependencies`, `peerDependencies`) and verifies against imports in `.js`, `.mjs`, `.cjs`, `.jsx`, `.ts`, `.mts`, `.cts`, `.tsx`, `.vue`, and `.svelte` files.
+  - **Scoped Packages & Subpaths**: Supports `@scope/pkg` and `pkg/subpath` imports.
+  - **Phantom Env**: Scans `process.env.VAR`, `process.env['VAR']`, `import.meta.env.VITE_VAR`, and `NEXT_PUBLIC_VAR`.
+  - **Auto-Fix for `package.json`**: `ghostbuster bust --confirm` automatically removes dead dependencies from `package.json` with preserved JSON formatting.
+  - **Orphan Files**: Added detection for Node log files (`npm-debug.log`, `yarn-error.log`, `pnpm-debug.log`).
+  - **Full-Stack Scanning**: Simultaneously scans Python backends and JS/TS frontends in monorepos with a unified Ghost Score.
+
 ## [0.2.2] - 2026-08-29
 
 ### Fixed

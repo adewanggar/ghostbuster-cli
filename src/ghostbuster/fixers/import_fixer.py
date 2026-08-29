@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import json
 import re
 from pathlib import Path
 
@@ -91,8 +92,33 @@ class ImportFixer:
                 removed = self._remove_from_pyproject_toml(file_path, package_names)
                 for pkg in removed:
                     applied.append(f"  Removed '{pkg}' from {file_path.name}")
+            elif file_path.name == "package.json":
+                removed = self._remove_from_package_json(file_path, package_names)
+                for pkg in removed:
+                    applied.append(f"  Removed '{pkg}' from {file_path.name}")
 
         return applied
+
+    def _remove_from_package_json(self, filepath: Path, package_names: list[str]) -> list[str]:
+        """Remove package entries from dependencies / devDependencies in package.json."""
+        removed: list[str] = []
+        try:
+            data = json.loads(filepath.read_text(encoding="utf-8"))
+            targets = set(package_names)
+
+            for section in ["dependencies", "devDependencies", "peerDependencies"]:
+                if section in data and isinstance(data[section], dict):
+                    for pkg in list(data[section].keys()):
+                        if pkg in targets:
+                            del data[section][pkg]
+                            removed.append(pkg)
+
+            if removed:
+                filepath.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+        except (OSError, ValueError):
+            pass
+
+        return removed
 
     def _remove_from_requirements_txt(self, filepath: Path, package_names: list[str]) -> list[str]:
         """Remove package entries from a requirements.txt file."""

@@ -187,11 +187,11 @@ Ghostbuster uses **pure AST analysis** - no runtime imports, no code execution, 
 
 ## Roadmap
 
-- <img src="https://raw.githubusercontent.com/adewanggar/ghostbuster-cli/main/assets/npm_package_icon.png" width="18" height="18" valign="middle" /> Node.js / TypeScript support (scan `package.json`, dead exports)
-- Pre-commit hook integration
-- GitHub Actions reporter (comment Ghost Score on PRs)
-- Config inheritance for monorepos
-- Ghost Score history tracking & trend chart
+- [x] <img src="https://raw.githubusercontent.com/adewanggar/ghostbuster-cli/main/assets/npm_package_icon.png" width="18" height="18" valign="middle" /> Node.js / JavaScript / TypeScript support (`package.json`, `process.env`, `import.meta.env`)
+- [x] Pre-commit hook integration (`.pre-commit-hooks.yaml`)
+- [ ] GitHub Actions reporter (comment Ghost Score on PRs)
+- [ ] Config inheritance for monorepos
+- [ ] Ghost Score history tracking & trend chart
 
 ## Contributing
 

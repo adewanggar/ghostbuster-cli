@@ -47,6 +47,9 @@ IGNORABLE_PATTERNS: dict[str, str] = {
     "Thumbs.db": "Windows thumbnail cache",
     ".env": "Environment variables file (may contain secrets)",
     ".env.local": "Local environment variables",
+    "npm-debug.log": "NPM debug log file",
+    "yarn-error.log": "Yarn error log file",
+    "pnpm-debug.log": "pnpm debug log file",
 }
 
 # Size threshold for flagging large files (10 MB)
