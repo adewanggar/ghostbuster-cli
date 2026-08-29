@@ -205,6 +205,13 @@ pip install pytest ruff mypy
 pytest tests/ -v
 ```
 
+## Support & Sponsor
+
+If Ghostbuster helped clean up your codebase or saved CI minutes, consider supporting the project:
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20on%20Ko--fi-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/adewanggar)
+[![Saweria](https://img.shields.io/badge/Saweria-Dukung%20lewat%20Saweria-FA8072?style=for-the-badge&logo=tether&logoColor=white)](https://saweria.co/adewanggar)
+
 ## License
 
 MIT (c) Ghostbuster Contributors
