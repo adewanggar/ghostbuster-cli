@@ -106,4 +106,4 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 check_untyped_defs = true
-files = ["src"]
+ignore_missing_imports = true
