@@ -23,6 +23,7 @@ from ghostbuster.cli.display import (
     print_scan_result_markdown,
     print_scanning_start,
 )
+from ghostbuster.core.git_diff import get_changed_files
 from ghostbuster.core.models import GhostCategory
 from ghostbuster.core.scanner import create_default_orchestrator
 
@@ -55,6 +56,17 @@ def scan(
         "-c",
         help="Only scan specific categories (dead-import, orphan-file, zombie-code, phantom-env).",
     ),
+    diff: bool = typer.Option(
+        False,
+        "--diff",
+        "-d",
+        help="Incremental fast scan: only scan modified, staged, and untracked files.",
+    ),
+    diff_base: str | None = typer.Option(
+        None,
+        "--diff-base",
+        help="Compare changed files against a specific git ref/branch (e.g. main, origin/main, HEAD~1).",
+    ),
     verbose: bool = typer.Option(
         False,
         "--verbose",
@@ -74,6 +86,8 @@ def scan(
 
     Examples:
         ghostbuster scan
+        ghostbuster scan --diff
+        ghostbuster scan --diff-base origin/main
         ghostbuster scan ./my-project --verbose
         ghostbuster scan --format json --category dead-import
     """
@@ -91,10 +105,19 @@ def scan(
                 )
                 raise typer.Exit(1)
 
+    # Handle diff mode
+    changed_files: set[Path] | None = None
+    if diff or diff_base:
+        changed_files = get_changed_files(path, base_ref=diff_base)
+
     # Show banner for rich format
     if format == OutputFormat.rich:
         print_banner()
         print_scanning_start(str(path), _get_scanner_names(category))
+        if diff or diff_base:
+            console.print(
+                f"  [cyan]Diff mode active ({len(changed_files or set())} changed files analyzed)[/cyan]\n"
+            )
 
     # Run the scan
     try:
@@ -105,7 +128,11 @@ def scan(
             if format == OutputFormat.rich
             else _nullcontext()
         ):
-            result = orchestrator.run(path, categories=category)
+            result = orchestrator.run(
+                path,
+                categories=category,
+                changed_files=changed_files if (diff or diff_base) else None,
+            )
 
     except Exception as exc:
         print_error(f"Scan failed: {exc}", "Run with --debug flag for full traceback.")

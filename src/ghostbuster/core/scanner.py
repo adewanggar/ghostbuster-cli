@@ -52,6 +52,7 @@ class ScanOrchestrator:
         self,
         path: Path,
         categories: list[str] | None = None,
+        changed_files: set[Path] | None = None,
     ) -> ScanResult:
         """Run all registered scanners (or filtered subset) on the given path.
 
@@ -59,6 +60,8 @@ class ScanOrchestrator:
             path: Root directory to scan.
             categories: Optional list of category names to filter scanners.
                         If None, all scanners are run.
+            changed_files: Optional set of changed file Paths from git diff.
+                           If provided, results will be filtered to these files.
 
         Returns:
             Aggregated ScanResult with all ghosts found and a score.
@@ -85,6 +88,18 @@ class ScanOrchestrator:
                         severity=Severity.LOW,
                     )
                 )
+
+        # In diff mode, filter ghosts to only those originating in changed files
+        if changed_files is not None:
+            resolved_changed = {p.resolve() for p in changed_files}
+            filtered_ghosts: list[Ghost] = []
+            for g in all_ghosts:
+                if g.file_path and g.file_path.resolve() in resolved_changed:
+                    filtered_ghosts.append(g)
+                elif not g.file_path:
+                    # Keep findings without a specific file path (general warnings)
+                    filtered_ghosts.append(g)
+            all_ghosts = filtered_ghosts
 
         elapsed_ms = (time.perf_counter() - start) * 1000
         score = calculate_score(all_ghosts)

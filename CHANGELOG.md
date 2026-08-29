@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-29
+
+### Added
+
+- **Git Diff / Incremental Fast Scan Mode (`ghostbuster scan --diff` / `-d`)**:
+  - Scan only modified, staged, and untracked files instead of the entire project tree.
+  - Added `--diff-base` flag to compare working branch against a target ref (e.g. `ghostbuster scan --diff-base origin/main`).
+  - Ideal for monorepos and GitHub Actions PR validation.
+  - Zero false positives: global reference verification remains intact for zombie code.
+
 ## [0.3.0] - 2026-08-29
 
 ### Added

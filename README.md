@@ -90,6 +90,18 @@ ghostbuster scan ./my-project
 ghostbuster scan -v
 ```
 
+### Incremental / Git Diff Scan
+
+Scan only files that were modified, staged, or untracked in your working tree:
+
+```bash
+# Scan modified files only (fast mode)
+ghostbuster scan --diff
+
+# Compare working branch against main/master
+ghostbuster scan --diff-base origin/main
+```
+
 ### Filtered Scan
 
 ```bash
