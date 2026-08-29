@@ -42,6 +42,15 @@ dependencies = [
     "tomli>=2.0.0; python_version < '3.11'",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
+    "build>=1.0.0",
+    "twine>=5.0.0",
+]
+
 [project.scripts]
 ghostbuster = "ghostbuster.cli.app:app"
 
