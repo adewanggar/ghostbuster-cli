@@ -6,11 +6,10 @@
 
 **Find and bust the ghosts haunting your codebase.**
 
-[![PyPI version](https://img.shields.io/pypi/v/ghostbuster-cli?color=blue&label=PyPI)](https://pypi.org/project/ghostbuster-cli/)
-[![Python](https://img.shields.io/pypi/pyversions/ghostbuster-cli)](https://pypi.org/project/ghostbuster-cli/)
+[![PyPI version](https://img.shields.io/pypi/v/ghostbuster-cli?color=blue&label=PyPI&logo=pypi)](https://pypi.org/project/ghostbuster-cli/)
+[![Python](https://img.shields.io/pypi/pyversions/ghostbuster-cli?logo=python)](https://pypi.org/project/ghostbuster-cli/)
 [![CI](https://github.com/adewanggar/ghostbuster-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/adewanggar/ghostbuster-cli/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Downloads](https://img.shields.io/pypi/dm/ghostbuster-cli)](https://pypi.org/project/ghostbuster-cli/)
 
 Unused dependencies, dead functions, orphan files, and phantom environment variables lurk in codebases - slowing down repos, confusing new contributors, and wasting CI minutes.
 
