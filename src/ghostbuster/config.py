@@ -11,6 +11,7 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any, cast
 
 
 @dataclass
@@ -84,7 +85,7 @@ class GhostbusterConfig:
         return config
 
 
-def _load_toml(filepath: Path) -> dict:
+def _load_toml(filepath: Path) -> dict[str, Any]:
     """Load a TOML file and return its contents as a dict."""
     try:
         if sys.version_info >= (3, 11):
@@ -92,25 +93,26 @@ def _load_toml(filepath: Path) -> dict:
         else:
             import tomli as tomllib  # type: ignore[no-redef]
 
-        return tomllib.loads(filepath.read_text(encoding="utf-8"))
+        data = tomllib.loads(filepath.read_text(encoding="utf-8"))
+        return cast("dict[str, Any]", data) if isinstance(data, dict) else {}
     except Exception:
         return {}
 
 
-def _apply_config(config: GhostbusterConfig, data: dict) -> GhostbusterConfig:
+def _apply_config(config: GhostbusterConfig, data: dict[str, Any]) -> GhostbusterConfig:
     """Apply a dict of config values to a GhostbusterConfig."""
-    if "exclude_dirs" in data:
+    if "exclude_dirs" in data and isinstance(data["exclude_dirs"], list):
         config.exclude_dirs = data["exclude_dirs"]
-    if "exclude_patterns" in data:
+    if "exclude_patterns" in data and isinstance(data["exclude_patterns"], list):
         config.exclude_patterns = data["exclude_patterns"]
-    if "categories" in data:
+    if "categories" in data and isinstance(data["categories"], list):
         config.categories = data["categories"]
-    if "ignore_packages" in data:
+    if "ignore_packages" in data and isinstance(data["ignore_packages"], list):
         config.ignore_packages = data["ignore_packages"]
-    if "ignore_env_vars" in data:
+    if "ignore_env_vars" in data and isinstance(data["ignore_env_vars"], list):
         config.ignore_env_vars = data["ignore_env_vars"]
-    if "ignore_names" in data:
+    if "ignore_names" in data and isinstance(data["ignore_names"], list):
         config.ignore_names = data["ignore_names"]
-    if "large_file_threshold" in data:
+    if "large_file_threshold" in data and isinstance(data["large_file_threshold"], int):
         config.large_file_threshold = data["large_file_threshold"]
     return config
