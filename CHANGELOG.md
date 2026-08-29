@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-29
+
+### Added
+
+- **Pre-commit Hook Integration**: added `.pre-commit-hooks.yaml` for automated pre-commit scanning (`ghostbuster-scan`).
+- **Auto-Fix for Orphan Files**: `ghostbuster bust --confirm` now automatically appends missing folders and files to `.gitignore`.
+- **Auto-Fix for Phantom Env Vars**: `ghostbuster bust --confirm` now automatically appends missing environment variable stubs to `.env.example`.
+- **Poetry Dependencies Support**: Dead Import Scanner now automatically parses `[tool.poetry.dependencies]` and `[tool.poetry.group.*.dependencies]`.
+- Comprehensive test suite for all auto-fixers (`GitignoreFixer`, `EnvFixer`, `ImportFixer`).
+
 ## [0.1.0] - 2026-08-29
 
 ### Added

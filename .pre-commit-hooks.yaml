@@ -1,0 +1,8 @@
+- id: ghostbuster-scan
+  name: ghostbuster scan
+  description: Find and bust the ghosts haunting your codebase
+  entry: ghostbuster scan
+  language: python
+  types: [python]
+  pass_filenames: false
+  always_run: true

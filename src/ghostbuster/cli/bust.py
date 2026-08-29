@@ -22,7 +22,7 @@ from ghostbuster.cli.display import (
 )
 from ghostbuster.core.models import GhostCategory
 from ghostbuster.core.scanner import create_default_orchestrator
-from ghostbuster.fixers.import_fixer import ImportFixer
+from ghostbuster.fixers import EnvFixer, Fixer, GitignoreFixer, ImportFixer
 
 
 def bust(
@@ -101,16 +101,28 @@ def bust(
 
     console.print(f"  Found [bold]{len(fixable_ghosts)}[/bold] fixable ghosts.\n")
 
-    # Apply fixes per category
-    fixer = ImportFixer()
+    # Run fixers across all categories
+    fixers: list[Fixer] = [
+        ImportFixer(),
+        GitignoreFixer(),
+        EnvFixer(),
+    ]
+
+    all_changes: list[str] = []
 
     if confirm:
-        changes = fixer.fix(fixable_ghosts, path)
-        print_bust_applied(changes)
+        for fixer in fixers:
+            changes = fixer.fix(fixable_ghosts, path)
+            all_changes.extend(changes)
+
+        print_bust_applied(all_changes)
         console.print(
             "\n  [bold green]Ghostbusting complete![/bold green] "
             "Don't forget to review the changes and run your tests.\n"
         )
     else:
-        changes = fixer.preview(fixable_ghosts, path)
-        print_bust_preview(changes)
+        for fixer in fixers:
+            changes = fixer.preview(fixable_ghosts, path)
+            all_changes.extend(changes)
+
+        print_bust_preview(all_changes)

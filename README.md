@@ -72,9 +72,9 @@ ghostbuster bust --confirm
 ```
 
 Currently auto-fixes:
-- Removes unused import statements
-- Suggests `.gitignore` additions for orphan files
-- Suggests `.env` additions for phantom env vars
+- Removes unused import statements from Python files
+- Appends missing orphan files and directories to `.gitignore`
+- Appends missing environment variable stubs (`KEY=`) to `.env.example`
 
 ## Usage
 
@@ -112,6 +112,18 @@ ghostbuster scan --format json
 
 # Markdown (for pasting into issues/PRs)
 ghostbuster scan --format markdown
+```
+
+### Pre-commit Hook Integration
+
+Add Ghostbuster to your `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+  - repo: https://github.com/adewanggar/ghostbuster-cli
+    rev: v0.2.0
+    hooks:
+      - id: ghostbuster-scan
 ```
 
 ### CI Integration
