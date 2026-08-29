@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-08-29
+
+### Fixed
+
+- Use absolute GitHub raw asset URLs in `README.md` so headers and icons render properly on PyPI and third-party package viewers.
+
 ## [0.2.1] - 2026-08-29
 
 ### Fixed

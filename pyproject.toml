@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ghostbuster-cli"
-version = "0.2.1"
+version = "0.2.2"
 description = "Find and bust the ghosts haunting your codebase - unused deps, dead code, orphan files, and phantom env vars."
 readme = "README.md"
 license = "MIT"

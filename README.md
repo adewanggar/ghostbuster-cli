@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/readme_header.png" alt="Ghostbuster Header" width="100%" />
+<img src="https://raw.githubusercontent.com/adewanggar/ghostbuster-cli/main/assets/readme_header.png" alt="Ghostbuster Header" width="100%" />
 
 # Ghostbuster
 
@@ -19,7 +19,7 @@ Unused dependencies, dead functions, orphan files, and phantom environment varia
 
 ---
 
-## <img src="assets/terminal_icon.png" width="24" height="24" valign="middle" /> Quick Start
+## <img src="https://raw.githubusercontent.com/adewanggar/ghostbuster-cli/main/assets/terminal_icon.png" width="24" height="24" valign="middle" /> Quick Start
 
 ```bash
 # Install
@@ -187,7 +187,7 @@ Ghostbuster uses **pure AST analysis** - no runtime imports, no code execution, 
 
 ## Roadmap
 
-- <img src="assets/npm_package_icon.png" width="18" height="18" valign="middle" /> Node.js / TypeScript support (scan `package.json`, dead exports)
+- <img src="https://raw.githubusercontent.com/adewanggar/ghostbuster-cli/main/assets/npm_package_icon.png" width="18" height="18" valign="middle" /> Node.js / TypeScript support (scan `package.json`, dead exports)
 - Pre-commit hook integration
 - GitHub Actions reporter (comment Ghost Score on PRs)
 - Config inheritance for monorepos
