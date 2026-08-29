@@ -1,32 +1,29 @@
-"""Import Fixer — removes unused import statements from Python files.
-
-Works with the dead-import scanner findings to automatically clean up
-import statements that reference packages no longer needed.
-"""
+"""Import Fixer - removes unused packages from requirements/pyproject and unused import statements."""
 
 from __future__ import annotations
 
 import ast
+import re
 from pathlib import Path
 
 from ghostbuster.core.models import Ghost, GhostCategory
 
 
 class ImportFixer:
-    """Removes unused import statements from Python files.
-
-    This fixer works on a per-file basis, removing import lines that
-    reference packages identified as dead imports.
-    """
+    """Removes unused dependencies from config files and unused import statements."""
 
     def preview(self, ghosts: list[Ghost], path: Path) -> list[str]:
-        """Preview what changes would be made (dry-run mode).
-
-        Returns a list of human-readable descriptions of changes.
-        """
+        """Preview what changes would be made (dry-run mode)."""
         changes: list[str] = []
-        dead_packages = self._get_dead_package_names(ghosts)
+        dead_ghosts = [g for g in ghosts if g.category == GhostCategory.DEAD_IMPORT and g.fixable]
+        if not dead_ghosts:
+            return changes
 
+        # 1. Preview removing from requirements.txt and pyproject.toml
+        changes.extend(self._preview_config_removals(dead_ghosts))
+
+        # 2. Preview removing unused import statements from Python files
+        dead_packages = self._get_dead_package_names(dead_ghosts)
         for py_file in path.rglob("*.py"):
             parts = py_file.relative_to(path).parts
             if any(p in {"venv", ".venv", "node_modules", ".git", "__pycache__"} for p in parts):
@@ -38,13 +35,17 @@ class ImportFixer:
         return changes
 
     def fix(self, ghosts: list[Ghost], path: Path) -> list[str]:
-        """Actually apply fixes: remove unused import statements.
-
-        Returns a list of applied changes.
-        """
+        """Apply fixes: remove unused dependencies from config and import statements."""
         applied: list[str] = []
-        dead_packages = self._get_dead_package_names(ghosts)
+        dead_ghosts = [g for g in ghosts if g.category == GhostCategory.DEAD_IMPORT and g.fixable]
+        if not dead_ghosts:
+            return applied
 
+        # 1. Remove from requirements.txt and pyproject.toml
+        applied.extend(self._apply_config_removals(dead_ghosts))
+
+        # 2. Remove unused import statements from Python files
+        dead_packages = self._get_dead_package_names(dead_ghosts)
         for py_file in path.rglob("*.py"):
             parts = py_file.relative_to(path).parts
             if any(p in {"venv", ".venv", "node_modules", ".git", "__pycache__"} for p in parts):
@@ -62,6 +63,90 @@ class ImportFixer:
             for g in ghosts
             if g.category == GhostCategory.DEAD_IMPORT
         }
+
+    def _preview_config_removals(self, ghosts: list[Ghost]) -> list[str]:
+        """Preview removal of dependencies from requirements.txt and pyproject.toml."""
+        changes: list[str] = []
+        for ghost in ghosts:
+            if ghost.file_path and ghost.file_path.exists():
+                changes.append(f"  Would remove '{ghost.name}' from {ghost.file_path.name}")
+        return changes
+
+    def _apply_config_removals(self, ghosts: list[Ghost]) -> list[str]:
+        """Remove declared dependencies from requirements.txt and pyproject.toml."""
+        applied: list[str] = []
+
+        # Group by config file
+        by_file: dict[Path, list[str]] = {}
+        for ghost in ghosts:
+            if ghost.file_path and ghost.file_path.exists():
+                by_file.setdefault(ghost.file_path, []).append(ghost.name)
+
+        for file_path, package_names in by_file.items():
+            if file_path.name == "requirements.txt" or file_path.name.endswith(".txt"):
+                removed = self._remove_from_requirements_txt(file_path, package_names)
+                for pkg in removed:
+                    applied.append(f"  Removed '{pkg}' from {file_path.name}")
+            elif file_path.name == "pyproject.toml":
+                removed = self._remove_from_pyproject_toml(file_path, package_names)
+                for pkg in removed:
+                    applied.append(f"  Removed '{pkg}' from {file_path.name}")
+
+        return applied
+
+    def _remove_from_requirements_txt(self, filepath: Path, package_names: list[str]) -> list[str]:
+        """Remove package entries from a requirements.txt file."""
+        removed: list[str] = []
+        try:
+            lines = filepath.read_text(encoding="utf-8").splitlines(keepends=True)
+            norm_targets = {p.lower().replace("-", "_") for p in package_names}
+
+            new_lines: list[str] = []
+            for line in lines:
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#") or stripped.startswith("-"):
+                    new_lines.append(line)
+                    continue
+
+                pkg_name = re.split(r"[>=<!\[;@]", stripped)[0].strip()
+                norm_pkg = pkg_name.lower().replace("-", "_")
+
+                if norm_pkg in norm_targets:
+                    removed.append(pkg_name)
+                else:
+                    new_lines.append(line)
+
+            if removed:
+                filepath.write_text("".join(new_lines), encoding="utf-8")
+        except OSError:
+            pass
+
+        return removed
+
+    def _remove_from_pyproject_toml(self, filepath: Path, package_names: list[str]) -> list[str]:
+        """Remove package entries from dependencies list in pyproject.toml."""
+        removed: list[str] = []
+        try:
+            lines = filepath.read_text(encoding="utf-8").splitlines(keepends=True)
+            norm_targets = {p.lower().replace("-", "_") for p in package_names}
+
+            new_lines: list[str] = []
+            for line in lines:
+                stripped = line.strip().strip(",").strip('"').strip("'")
+                pkg_name = re.split(r"[>=<!\[;@]", stripped)[0].strip()
+                norm_pkg = pkg_name.lower().replace("-", "_")
+
+                if norm_pkg in norm_targets and ("=" not in stripped or "[" not in stripped):
+                    removed.append(pkg_name)
+                else:
+                    new_lines.append(line)
+
+            if removed:
+                filepath.write_text("".join(new_lines), encoding="utf-8")
+        except OSError:
+            pass
+
+        return removed
 
     def _find_removable_imports(self, filepath: Path, dead_packages: set[str]) -> list[str]:
         """Find import statements that can be removed from a file."""
@@ -114,7 +199,6 @@ class ImportFixer:
                 pkg = node.module.split(".")[0].lower().replace("-", "_")
                 if pkg in dead_packages:
                     lines_to_remove.add(node.lineno)
-                    # Handle multi-line imports
                     if node.end_lineno and node.end_lineno > node.lineno:
                         for ln in range(node.lineno, node.end_lineno + 1):
                             lines_to_remove.add(ln)

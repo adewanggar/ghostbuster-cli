@@ -7,6 +7,39 @@ from pathlib import Path
 from ghostbuster.core.models import Ghost, GhostCategory, Severity
 from ghostbuster.fixers.env_fixer import EnvFixer
 from ghostbuster.fixers.gitignore_fixer import GitignoreFixer
+from ghostbuster.fixers.import_fixer import ImportFixer
+
+
+class TestImportFixer:
+    """Tests for ImportFixer."""
+
+    def test_remove_dead_import_from_requirements_txt(self, tmp_path: Path) -> None:
+        """Should remove dead package from requirements.txt."""
+        req_file = tmp_path / "requirements.txt"
+        req_file.write_text("requests==2.28.0\nlxml>=4.9.0\npyyaml\n", encoding="utf-8")
+
+        ghosts = [
+            Ghost(
+                category=GhostCategory.DEAD_IMPORT,
+                name="lxml",
+                message="lxml is unused",
+                file_path=req_file,
+                severity=Severity.MEDIUM,
+                fixable=True,
+            ),
+        ]
+
+        fixer = ImportFixer()
+        preview = fixer.preview(ghosts, tmp_path)
+        assert any("lxml" in p for p in preview)
+
+        applied = fixer.fix(ghosts, tmp_path)
+        assert len(applied) == 1
+
+        content = req_file.read_text(encoding="utf-8")
+        assert "lxml" not in content
+        assert "requests==2.28.0" in content
+        assert "pyyaml" in content
 
 
 class TestGitignoreFixer:
