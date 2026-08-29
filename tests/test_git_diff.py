@@ -105,7 +105,10 @@ class TestScanCliDiffFlag:
 
     def test_cli_diff_option_help(self) -> None:
         """--help should include --diff and --diff-base."""
+        import re
+
         result = runner.invoke(app, ["scan", "--help"])
         assert result.exit_code == 0
-        assert "--diff" in result.output
-        assert "--diff-base" in result.output
+        clean_output = re.sub(r"\x1b\[[0-9;]*[a-zA-Z]", "", result.output)
+        assert "--diff" in clean_output
+        assert "--diff-base" in clean_output
