@@ -6,7 +6,7 @@
 
 **Find and bust the ghosts haunting your codebase.**
 
-[![PyPI version](https://img.shields.io/pypi/v/ghostbuster-cli?color=blue&label=PyPI&logo=pypi)](https://pypi.org/project/ghostbuster-cli/)
+[![PyPI version](https://img.shields.io/pypi/v/ghostbuster-cli?logo=pypi&label=PyPI&color=3775A9)](https://pypi.org/project/ghostbuster-cli/)
 [![Python](https://img.shields.io/pypi/pyversions/ghostbuster-cli?logo=python)](https://pypi.org/project/ghostbuster-cli/)
 [![CI](https://github.com/adewanggar/ghostbuster-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/adewanggar/ghostbuster-cli/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
